@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="playbox">
     <table>
       <tr v-for="(row, rowIx) in activeGrid" :key="rowIx">
         <td v-for="(cell, colIx) in activeGrid[rowIx]" :key="colIx"
@@ -12,7 +12,8 @@
             size="1"
             min="1"
             max="9"
-            @change="validate(rowIx, colIx)" >
+            @change="validate(rowIx, colIx)"
+          >
         </td>
       </tr>
     </table>
@@ -144,9 +145,11 @@ export default {
 </script>
 
 <style>
+table {
+  width: 100%;
+  height: 100%;
+}
 td {
-  width: 30px;
-  height: 30px;
   border: 1px solid black;
 }
 input {
@@ -157,5 +160,11 @@ input {
 }
 .conflict {
   background-color: red
+}
+.playbox {
+  padding-top: 35px;
+  width: 350px;
+  height: 350px;
+  margin: 0 auto;
 }
 </style>
