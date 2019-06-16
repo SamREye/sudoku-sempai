@@ -7,7 +7,7 @@
         >
           <input
             type="number"
-            :disabled="cell != null && classGrid[rowIx][colIx] === 'normal'"
+            :disabled="cell > 0 && cell < 10 && classGrid[rowIx][colIx] === 'normal'"
             v-model="activeGrid[rowIx][colIx]"
             size="1"
             min="1"
