@@ -1,13 +1,14 @@
 <template>
   <div id="app">
     <header>
-    </header>
-    <main>
-      <div class="statbox">
+      <div class="statsbox">
         <ul>
-          <li><label>Remaining: </label>{{ remaining }}</li>
+          <li>Remaining: {{ remaining }}</li>
+          <li>Naked Singles: {{ "5" }}</li>
         </ul>
       </div>
+    </header>
+    <main>
       <div class="playbox">
         <table>
           <tr v-for="(row, rowIx) in activeGrid" :key="rowIx">
@@ -22,11 +23,8 @@
       </div>
     </main>
     <footer>
-      <ul>
-        <li
-          class="numbers"
-          v-for="num in [1, 2, 3, 4, 5, 6, 7, 8, 9]" :key="num"
-        >
+      <ul class="numbers">
+        <li v-for="num in [1, 2, 3, 4, 5, 6, 7, 8, 9]" :key="num">
           <p @click="insert(num)">{{ num }}</p>
         </li>
       </ul>
@@ -255,19 +253,20 @@ input {
   height: 350px;
   margin: 0 auto;
 }
-.numbers {
+.numbers > li {
+  float: left;
+  width: 11%
+}
+.stats > li {
   float: left;
 }
 main {
-  min-height: calc(100vh - 70px);
+  min-height: calc(100vh - 80px);
 }
 footer {
-  height: 50px;
+  height: 80px;
 }
 ul {
   list-style-type: none;
-}
-li {
-  width: 11%
 }
 </style>
