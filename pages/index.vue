@@ -1,22 +1,29 @@
 <template>
-  <div class="playbox">
-    <table>
-      <tr v-for="(row, rowIx) in activeGrid" :key="rowIx">
-        <td v-for="(cell, colIx) in activeGrid[rowIx]" :key="colIx"
-          :class="classGrid[rowIx][colIx]"
-        >
-          <input
-            type="number"
-            :disabled="cell > 0 && cell < 10 && classGrid[rowIx][colIx] === 'normal'"
-            v-model="activeGrid[rowIx][colIx]"
-            size="1"
-            min="1"
-            max="9"
-            @change="validate(rowIx, colIx)"
+  <div id="app">
+    <div class="statbox">
+      <ul>
+        <li><label>Remaining:</label><p>{{ remaining }}</p></li>
+      </ul>
+    </div>
+    <div class="playbox">
+      <table>
+        <tr v-for="(row, rowIx) in activeGrid" :key="rowIx">
+          <td v-for="(cell, colIx) in activeGrid[rowIx]" :key="colIx"
+            :class="classGrid[rowIx][colIx]"
           >
-        </td>
-      </tr>
-    </table>
+            <input
+              type="number"
+              :disabled="cell > 0 && cell < 10 && classGrid[rowIx][colIx] === 'normal'"
+              v-model="activeGrid[rowIx][colIx]"
+              size="1"
+              min="1"
+              max="9"
+              @change="validate(rowIx, colIx)"
+            >
+          </td>
+        </tr>
+      </table>
+    </div>
   </div>
 </template>
 
@@ -51,6 +58,9 @@ export default {
     }
   },
   computed: {
+    remaining() {
+      return this.activeGrid.slice().flat().filter(x => x == null).length
+    },
     classGrid() {
       let classes = [
         ['normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', ],
@@ -203,7 +213,7 @@ td {
   border: 1px solid black;
 }
 input {
-  width: 30px;
+  width: 100%;
   font-family: monospace;
   font-size: 20px;
   text-align: center;
