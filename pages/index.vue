@@ -63,19 +63,27 @@ export default {
         ['normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', ],
         ['normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', ],
       ]
-      console.log(this.conflict)
       if (this.conflict.result === 'good') return classes
       if (this.conflict.type === 'row') {
-        classes[this.conflict.y][this.conflict.x[0]] = 'conflict'
-        classes[this.conflict.y][this.conflict.x[1]] = 'conflict'
+        for (let i = 0; i < 9; i++) classes[this.conflict.y][i] = 'highlight'
+        classes[this.conflict.y][this.conflict.x[0]] += ' conflict'
+        classes[this.conflict.y][this.conflict.x[1]] += ' conflict'
       }
       if (this.conflict.type === 'col') {
-        classes[this.conflict.y[0]][this.conflict.x] = 'conflict'
-        classes[this.conflict.y[1]][this.conflict.x] = 'conflict'
+        for (let i = 0; i < 9; i++) classes[i][this.conflict.x] = 'highlight'
+        classes[this.conflict.y[0]][this.conflict.x] += ' conflict'
+        classes[this.conflict.y[1]][this.conflict.x] += ' conflict'
       }
       if (this.conflict.type === 'square') {
-        classes[this.conflict.coords[0].y][this.conflict.coords[0].x] = 'conflict'
-        classes[this.conflict.coords[1].y][this.conflict.coords[1].x] = 'conflict'
+        const baseX = (this.conflict.square % 3) * 3
+        const baseY = parseInt(this.conflict.square / 3) * 3
+        for (let i = 0; i < 3; i++) {
+          for (let j = 0; j < 3; j++) {
+            classes[baseY + i][baseX + j] = 'highlight'
+          }
+        }
+        classes[this.conflict.coords[0].y][this.conflict.coords[0].x] += ' conflict'
+        classes[this.conflict.coords[1].y][this.conflict.coords[1].x] += ' conflict'
       }
       return classes
     }
@@ -142,6 +150,7 @@ export default {
           return {
             result: 'conflict',
             type: 'square',
+            square: squareIndex,
             number: i,
             coords: [
               this.squareToGrid({
@@ -198,6 +207,9 @@ input {
   font-family: monospace;
   font-size: 20px;
   text-align: center;
+}
+.highlight {
+  border-color: pink;
 }
 .normal {
   background-color: white;
