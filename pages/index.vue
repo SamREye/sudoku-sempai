@@ -118,7 +118,7 @@ export default {
       this.selectY = null
       this.selectX = null
       this.conflict = this.verifyGrid(this.activeGrid)
-      this.$forceUpdate()
+      // this.$forceUpdate()
     },
     verifyGrid(grid) {
       let conf = {}
