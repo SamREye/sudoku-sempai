@@ -1,29 +1,36 @@
 <template>
   <div id="app">
-    <div class="statbox">
-      <ul>
-        <li><label>Remaining:</label><p>{{ remaining }}</p></li>
-      </ul>
-    </div>
-    <div class="playbox">
-      <table>
-        <tr v-for="(row, rowIx) in activeGrid" :key="rowIx">
-          <td v-for="(cell, colIx) in activeGrid[rowIx]" :key="colIx"
-            :class="classGrid[rowIx][colIx]"
-          >
-            <input
-              type="number"
-              :disabled="cell > 0 && cell < 10 && classGrid[rowIx][colIx] === 'normal'"
-              v-model="activeGrid[rowIx][colIx]"
-              size="1"
-              min="1"
-              max="9"
-              @change="validate(rowIx, colIx)"
+    <header>
+    </header>
+    <main>
+      <div class="statbox">
+        <ul>
+          <li><label>Remaining: </label>{{ remaining }}</li>
+        </ul>
+      </div>
+      <div class="playbox">
+        <table>
+          <tr v-for="(row, rowIx) in activeGrid" :key="rowIx">
+            <td v-for="(cell, colIx) in activeGrid[rowIx]" :key="colIx"
+              :class="classGrid[rowIx][colIx]"
+              @click="select(rowIx, colIx)"
             >
-          </td>
-        </tr>
-      </table>
-    </div>
+              {{ cell }}
+            </td>
+          </tr>
+        </table>
+      </div>
+    </main>
+    <footer>
+      <ul>
+        <li
+          class="numbers"
+          v-for="num in [1, 2, 3, 4, 5, 6, 7, 8, 9]" :key="num"
+        >
+          <p @click="insert(num)">{{ num }}</p>
+        </li>
+      </ul>
+    </footer>
   </div>
 </template>
 
@@ -54,7 +61,9 @@ export default {
         [null, null, null, 4, 1, 9, null, null, 5],
         [null, null, null, null, 8, null, null, 7, 9],
       ],
-      conflict: { result: 'good' }
+      conflict: { result: 'good' },
+      selectY: null,
+      selectX: null
     }
   },
   computed: {
@@ -73,6 +82,9 @@ export default {
         ['normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', ],
         ['normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', ],
       ]
+      if (this.selectY != null && this.selectX != null) {
+        classes[this.selectY][this.selectX] = 'selected'
+      }
       if (this.conflict.result === 'good') return classes
       if (this.conflict.type === 'row') {
         for (let i = 0; i < 9; i++) classes[this.conflict.y][i] = 'highlight'
@@ -99,14 +111,15 @@ export default {
     }
   },
   methods: {
-    validate(y, x) {
-      const num = parseInt(this.activeGrid[y][x])
-      if (num > 0 && num < 10) {
-        this.activeGrid[y][x] = num
-        this.conflict = this.verifyGrid(this.activeGrid)
-      } else {
-        this.activeGrid[y][x] = null
-      }
+    select(y, x) {
+      this.selectY = y
+      this.selectX = x
+    },
+    insert(num) {
+      this.activeGrid[this.selectY][this.selectX] = parseInt(num)
+      this.selectY = null
+      this.selectX = null
+      this.conflict = this.verifyGrid(this.activeGrid)
     },
     verifyGrid(grid) {
       let conf = {}
@@ -211,11 +224,17 @@ table {
 }
 td {
   border: 1px solid black;
+  font-family: monospace;
+  font-size: 100%;
+  font-weight: 600;
+  text-align: center;
 }
 input {
   width: 100%;
+  height: 100%;
   font-family: monospace;
-  font-size: 20px;
+  font-size: 100%;
+  font-weight: 600;
   text-align: center;
 }
 .highlight {
@@ -225,12 +244,30 @@ input {
   background-color: white;
 }
 .conflict {
-  background-color: red
+  background-color: red;
+}
+.selected {
+  background-color: green;
 }
 .playbox {
   padding-top: 35px;
   width: 350px;
   height: 350px;
   margin: 0 auto;
+}
+.numbers {
+  float: left;
+}
+main {
+  min-height: calc(100vh - 70px);
+}
+footer {
+  height: 50px;
+}
+ul {
+  list-style-type: none;
+}
+li {
+  width: 11%
 }
 </style>
