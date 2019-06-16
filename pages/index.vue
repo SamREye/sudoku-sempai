@@ -154,6 +154,9 @@ td {
 }
 input {
   width: 30px;
+  font-family: monospace;
+  font-size: 20px;
+  text-align: center;
 }
 .normal {
   background-color: white;
