@@ -1,68 +1,161 @@
 <template>
-  <div class="container">
-    <div>
-      <logo />
-      <h1 class="title">
-        sudoku
-      </h1>
-      <h2 class="subtitle">
-        My shining Nuxt.js project
-      </h2>
-      <div class="links">
-        <a
-          href="https://nuxtjs.org/"
-          target="_blank"
-          class="button--green"
-        >Documentation</a>
-        <a
-          href="https://github.com/nuxt/nuxt.js"
-          target="_blank"
-          class="button--grey"
-        >GitHub</a>
-      </div>
-    </div>
+  <div>
+    <table>
+      <tr v-for="(row, rowIx) in activeGrid" :key="rowIx">
+        <td v-for="(cell, colIx) in activeGrid[rowIx]" :key="colIx"
+          :class="classGrid[rowIx][colIx]"
+        >
+          <input
+            type="number"
+            :disabled="cell != null && classGrid[rowIx][colIx] === 'normal'"
+            v-model="activeGrid[rowIx][colIx]"
+            size="1"
+            min="1"
+            max="9"
+            @change="validate(rowIx, colIx)" >
+        </td>
+      </tr>
+    </table>
   </div>
 </template>
 
 <script>
-import Logo from '~/components/Logo.vue'
-
 export default {
-  components: {
-    Logo
+  components: {},
+  data() {
+    return {
+      solution: [
+        [5, 3, 4, 6, 7, 8, 9, 1, 2],
+        [6, 7, 2, 1, 9, 5, 3, 4, 8],
+        [1, 9, 8, 3, 4, 2, 5, 6, 7],
+        [8, 5, 9, 7, 6, 1, 4, 2, 3],
+        [4, 2, 6, 8, 5, 3, 7, 9, 1],
+        [7, 1, 3, 9, 2, 4, 8, 5, 6],
+        [9, 6, 1, 5, 3, 7, 2, 8, 4],
+        [2, 8, 7, 4, 1, 9, 6, 3, 5],
+        [3, 4, 5, 2, 8, 6, 1, 7, 9],
+      ],
+      activeGrid: [
+        [5, 3, null, null, 7, null, null, null, null],
+        [6, null, null, 1, 9, 5, null, null, null],
+        [null, 9, 8, null, null, null, null, 6, null],
+        [8, null, null, null, 6, null, null, null, 3],
+        [4, null, null, 8, null, 3, null, null, 1],
+        [7, null, null, null, 2, null, null, null, 6],
+        [null, 6, null, null, null, null, 2, 8, null],
+        [null, null, null, 4, 1, 9, null, null, 5],
+        [null, null, null, null, 8, null, null, 7, 9],
+      ],
+      conflict: { result: 'good' }
+    }
+  },
+  watch: {
+    activeGrid(val) {
+      this.verifyGrid(val)
+    }
+  },
+  computed: {
+    classGrid() {
+      let classes = [
+        ['normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', ],
+        ['normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', ],
+        ['normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', ],
+        ['normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', ],
+        ['normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', ],
+        ['normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', ],
+        ['normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', ],
+        ['normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', ],
+        ['normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', ],
+      ]
+      console.log(this.conflict)
+      if (this.conflict.result === 'good') return classes
+      if (this.conflict.type === 'row') {
+        classes[this.conflict.y][this.conflict.x[0]] = 'conflict'
+        classes[this.conflict.y][this.conflict.x[1]] = 'conflict'
+      }
+      if (this.conflict.type === 'col') {
+        classes[this.conflict.y[0]][this.conflict.x] = 'conflict'
+        classes[this.conflict.y[1]][this.conflict.x] = 'conflict'
+      }
+      console.log(classes)
+      return classes
+    }
+  },
+  methods: {
+    validate(y, x) {
+      const num = parseInt(this.activeGrid[y][x])
+      if (num > 0 && num < 10) {
+        this.activeGrid[y][x] = num
+        this.conflict = this.verifyGrid(this.activeGrid)
+      } else {
+        this.activeGrid[y][x] = ''
+      }
+    },
+    verifyGrid(grid) {
+      let conf = {}
+      for (let i = 0; i < 9; i++) {
+        conf = this.verifyRow(grid[i], i)
+        if (conf.result !== 'good') return conf
+      }
+      if (conf.result === 'good') {
+        for (let i = 0; i < 9; i++) {
+          conf = this.verifyCol(grid.map(x => x[i]), i)
+          if (conf.result !== 'good') return conf
+        }
+      }
+      return conf
+    },
+    verifyCol(line, colIndex) {
+      const result = this.verifyLine(line)
+      if (result.result === 'good') return result
+      return { result: 'conflict', type: 'col', number: result.number, y: result.indexes, x: colIndex }
+    },
+    verifyRow(line, rowIndex) {
+      const result = this.verifyLine(line)
+      if (result.result === 'good') return result
+      return { result: 'conflict', type: 'row', number: result.number, y: rowIndex, x: result.indexes }
+    },
+    verifyLine(line) {
+      const myline = line.slice()
+      for (let i = 1; i <= 9; i++) {
+        if (myline.filter(x => x === i).length > 1) {
+          const first = myline.findIndex(x => x === i)
+          myline.splice(0, first + 1)
+          const second = myline.findIndex(x => x === i)
+          return { result: 'conflict', number: i, indexes: [ first, second + first + 1 ] }
+        }
+      }
+      return { result: 'good' }
+    },
+    squareToGrid(squareNotation) {
+      let baseX = (squareNotation.square % 3) * 3
+      let baseY = Math.floor(squareNotation.square / 3) * 3
+      return { x: baseX + squareNotation.x, y: baseY + squareNotation.y }
+    },
+    gridToSquare(GridNotation) {
+      return {
+        square: Math.floor(GridNotation.x / 3) + Math.floor(GridNotation.y / 3) * 3,
+        x: GridNotation.x % 3,
+        y: GridNotation.y % 3,
+      }
+    }
   }
 }
 </script>
 
 <style>
-.container {
-  margin: 0 auto;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
+td {
+  width: 30px;
+  height: 30px;
+  border: 1px solid black;
 }
-
-.title {
-  font-family: 'Quicksand', 'Source Sans Pro', -apple-system, BlinkMacSystemFont,
-    'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  display: block;
-  font-weight: 300;
-  font-size: 100px;
-  color: #35495e;
-  letter-spacing: 1px;
+input {
+  width: 30px;
 }
-
-.subtitle {
-  font-weight: 300;
-  font-size: 42px;
-  color: #526488;
-  word-spacing: 5px;
-  padding-bottom: 15px;
+.normal {
+  background-color: white;
 }
-
-.links {
-  padding-top: 15px;
+.conflict {
+  background-color: red
 }
 </style>
