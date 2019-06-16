@@ -4,7 +4,7 @@
       <div class="statsbox">
         <ul>
           <li>Remaining: {{ remaining() }}</li>
-          <li>Naked Singles: {{ "5" }}</li>
+          <li ref="simplesinglehint" @click="showHint">Simple Singles: {{ this.hints.filter(x => x.type === 'Simple Single').length }} {{ hintDetail != null ? ' (' + hintDetail + ')' : '' }}</li>
         </ul>
       </div>
     </header>
@@ -59,10 +59,27 @@ export default {
         [null, null, null, 4, 1, 9, null, null, 5],
         [null, null, null, null, 8, null, null, 7, 9],
       ],
+      possibilitiesGrid: [
+        [[], [], [], [], [], [], [], [], []],
+        [[], [], [], [], [], [], [], [], []],
+        [[], [], [], [], [], [], [], [], []],
+        [[], [], [], [], [], [], [], [], []],
+        [[], [], [], [], [], [], [], [], []],
+        [[], [], [], [], [], [], [], [], []],
+        [[], [], [], [], [], [], [], [], []],
+        [[], [], [], [], [], [], [], [], []],
+        [[], [], [], [], [], [], [], [], []],
+      ],
       conflict: { result: 'good' },
       selectY: null,
-      selectX: null
+      selectX: null,
+      hints: [],
+      displayHint: false,
+      hintDetail: null
     }
+  },
+  mounted() {
+    this.refreshPossibilitiesGrid()
   },
   computed: {
     classGrid() {
@@ -77,6 +94,10 @@ export default {
         ['normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', ],
         ['normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', ],
       ]
+      if (this.displayHint && this.hints.length > 0) {
+        const hint = this.hints[0]
+        classes[hint.y][hint.x] = 'highlight'
+      }
       if (this.selectY != null && this.selectX != null) {
         classes[this.selectY][this.selectX] = 'selected'
       }
@@ -114,10 +135,14 @@ export default {
       this.selectX = x
     },
     insert(num) {
+      if (this.selectY == null || this.selectX == null) return
       this.activeGrid[this.selectY][this.selectX] = parseInt(num)
       this.selectY = null
       this.selectX = null
       this.conflict = this.verifyGrid(this.activeGrid)
+      this.refreshPossibilitiesGrid()
+      this.displayHint = false
+      this.hintDetail = null
       // this.$forceUpdate()
     },
     verifyGrid(grid) {
@@ -211,6 +236,47 @@ export default {
         x: GridNotation.x % 3,
         y: GridNotation.y % 3,
       }
+    },
+    refreshPossibilitiesGrid() {
+      this.hints = []
+      const active = this.activeGrid.slice()
+      for (let i = 0; i < 9; i++) {
+        for (let j = 0; j < 9; j++) {
+          if (active[i][j] != null) continue
+          const rowPoss = this.getPossibilities(active[i].slice())
+          const colPoss = this.getPossibilities(active.map(x => x[j]))
+          const sqPoss = this.getPossibilities(this.pullSquare(this.gridToSquare({ y: i, x: j }).square).flat())
+          const poss = rowPoss.filter(x => colPoss.includes(x)).filter(y => sqPoss.includes(y))
+          this.possibilitiesGrid[i][j] = poss
+          if (poss.length === 1) {
+            this.hints.push({
+              y: i,
+              x: j,
+              type: 'Simple Single',
+              number: poss[0]
+            })
+          }
+        }
+      }
+    },
+    getPossibilities(list) {
+      const uniq = this.sortUniq(list)
+      return [1, 2, 3, 4, 5, 6, 7, 8, 9].filter(x => !uniq.includes(x))
+    },
+    sortUniq(arr) {
+      if (arr.length === 0) return arr;
+      arr = arr.sort(function (a, b) { return a*1 - b*1; });
+      var ret = [arr[0]];
+      for (var i = 1; i < arr.length; i++) {
+        if (arr[i-1] !== arr[i]) {
+          ret.push(arr[i]);
+        }
+      }
+      return ret;
+    },
+    showHint() {
+      if (this.displayHint) this.hintDetail = this.hints[0].number
+      this.displayHint = true
     }
   }
 }
