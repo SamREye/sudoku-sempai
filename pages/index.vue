@@ -134,10 +134,8 @@ export default {
     },
     verifySquare(list, squareIndex) {
       const mysquare = list.slice().flat()
-      console.log(mysquare)
       for (let i = 1; i <= 9; i++) {
         if (mysquare.filter(x => x === i).length > 1) {
-          console.log(i)
           const first = mysquare.findIndex(x => x === i)
           mysquare.splice(0, first + 1)
           const second = mysquare.findIndex(x => x === i)
