@@ -50,11 +50,6 @@ export default {
       conflict: { result: 'good' }
     }
   },
-  watch: {
-    activeGrid(val) {
-      this.verifyGrid(val)
-    }
-  },
   computed: {
     classGrid() {
       let classes = [
@@ -78,7 +73,10 @@ export default {
         classes[this.conflict.y[0]][this.conflict.x] = 'conflict'
         classes[this.conflict.y[1]][this.conflict.x] = 'conflict'
       }
-      console.log(classes)
+      if (this.conflict.type === 'square') {
+        classes[this.conflict.coords[0].y][this.conflict.coords[0].x] = 'conflict'
+        classes[this.conflict.coords[1].y][this.conflict.coords[1].x] = 'conflict'
+      }
       return classes
     }
   },
@@ -89,7 +87,7 @@ export default {
         this.activeGrid[y][x] = num
         this.conflict = this.verifyGrid(this.activeGrid)
       } else {
-        this.activeGrid[y][x] = ''
+        this.activeGrid[y][x] = null
       }
     },
     verifyGrid(grid) {
@@ -101,6 +99,12 @@ export default {
       if (conf.result === 'good') {
         for (let i = 0; i < 9; i++) {
           conf = this.verifyCol(grid.map(x => x[i]), i)
+          if (conf.result !== 'good') return conf
+        }
+      }
+      if (conf.result === 'good') {
+        for (let i = 0; i < 9; i++) {
+          conf = this.verifySquare(this.pullSquare(i), i)
           if (conf.result !== 'good') return conf
         }
       }
@@ -127,6 +131,45 @@ export default {
         }
       }
       return { result: 'good' }
+    },
+    verifySquare(list, squareIndex) {
+      const mysquare = list.slice().flat()
+      console.log(mysquare)
+      for (let i = 1; i <= 9; i++) {
+        if (mysquare.filter(x => x === i).length > 1) {
+          console.log(i)
+          const first = mysquare.findIndex(x => x === i)
+          mysquare.splice(0, first + 1)
+          const second = mysquare.findIndex(x => x === i)
+          return {
+            result: 'conflict',
+            type: 'square',
+            number: i,
+            coords: [
+              this.squareToGrid({
+                square: squareIndex,
+                x: first % 3,
+                y: parseInt(first / 3)
+              }),
+              this.squareToGrid({
+                square: squareIndex,
+                x: (second + first + 1) % 3,
+                y: parseInt((second + first + 1) / 3)
+              }),
+            ]
+          }
+        }
+      }
+      return { result: 'good' }
+    },
+    pullSquare(squareIndex) {
+      let baseX = (squareIndex % 3) * 3
+      let baseY = Math.floor(squareIndex / 3) * 3
+      return [
+        [this.activeGrid[baseY][baseX], this.activeGrid[baseY][baseX + 1], this.activeGrid[baseY][baseX + 2] ],
+        [this.activeGrid[baseY + 1][baseX], this.activeGrid[baseY + 1][baseX + 1], this.activeGrid[baseY + 1][baseX + 2] ],
+        [this.activeGrid[baseY + 2][baseX], this.activeGrid[baseY + 2][baseX + 1], this.activeGrid[baseY + 2][baseX + 2] ],
+      ]
     },
     squareToGrid(squareNotation) {
       let baseX = (squareNotation.square % 3) * 3
