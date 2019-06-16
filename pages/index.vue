@@ -3,7 +3,7 @@
     <header>
       <div class="statsbox">
         <ul>
-          <li>Remaining: {{ remaining }}</li>
+          <li>Remaining: {{ remaining() }}</li>
           <li>Naked Singles: {{ "5" }}</li>
         </ul>
       </div>
@@ -65,9 +65,6 @@ export default {
     }
   },
   computed: {
-    remaining() {
-      return this.activeGrid.slice().flat().filter(x => x == null).length
-    },
     classGrid() {
       let classes = [
         ['normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', ],
@@ -109,6 +106,9 @@ export default {
     }
   },
   methods: {
+    remaining() {
+      return this.activeGrid.flat().filter(x => x == null).length
+    },
     select(y, x) {
       this.selectY = y
       this.selectX = x
@@ -118,6 +118,7 @@ export default {
       this.selectY = null
       this.selectX = null
       this.conflict = this.verifyGrid(this.activeGrid)
+      this.$forceUpdate()
     },
     verifyGrid(grid) {
       let conf = {}
