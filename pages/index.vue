@@ -338,10 +338,11 @@ ul {
 }
 li > p {
   text-align: center;
-  display: inline-block;
-  padding: 20px 25px;
+  display: block;
+  padding: 5px 5px;
   font-size: 18px;
   border: 1px solid gray;
   border-radius: 10px;
+  margin: 2px;
 }
 </style>
