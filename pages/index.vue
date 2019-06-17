@@ -336,4 +336,7 @@ footer {
 ul {
   list-style-type: none;
 }
+li > p {
+  text-align: center;
+}
 </style>
