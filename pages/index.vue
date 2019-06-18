@@ -283,6 +283,10 @@ export default {
 </script>
 
 <style>
+.statsbox {
+    padding: 20px 10px;
+    line-height: 25px;
+}
 table {
   width: 100%;
   height: 100%;
