@@ -322,9 +322,9 @@ input {
   background-color: green;
 }
 .playbox {
-  padding-top: 35px;
+  padding-top: 100px;
   width: 350px;
-  height: 350px;
+  height: 450px;
   margin: 0 auto;
 }
 .numbers > li {
