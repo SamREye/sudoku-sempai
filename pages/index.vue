@@ -353,4 +353,8 @@ li > p {
   border-radius: 10px;
   margin: 2px;
 }
+.numbers :hover {
+  border-color: lightskyblue;
+  color: rgb(10, 145, 230);
+}
 </style>
