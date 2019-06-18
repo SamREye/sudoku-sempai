@@ -283,6 +283,9 @@ export default {
 </script>
 
 <style>
+header{
+  background-color: lightskyblue;
+}
 .statsbox {
     padding: 20px 10px;
     line-height: 25px;
