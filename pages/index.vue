@@ -285,7 +285,6 @@ export default {
 <style>
 header{
   background-color: lightskyblue;
-  text-align: center;
 }
 .statsbox {
     padding: 20px 10px;
