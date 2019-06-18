@@ -339,6 +339,7 @@ main {
 }
 footer {
   height: 80px;
+  width: 90%;
 }
 ul {
   list-style-type: none;
