@@ -335,6 +335,7 @@ input {
 }
 main {
   min-height: calc(100vh - 190px);
+  margin-top: 50px;
 }
 footer {
   height: 80px;
