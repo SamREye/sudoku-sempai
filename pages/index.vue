@@ -288,7 +288,7 @@ header{
 }
 .statsbox {
     padding: 20px 10px;
-    line-height: 25px;
+    line-height: 20px;
 }
 table {
   width: 100%;
